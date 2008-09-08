@@ -1,0 +1,53 @@
+= ruby-xen
+
+* FIX (url)
+
+== DESCRIPTION:
+
+ruby-xen allows you to manage Xen virtual servers via Ruby. It currently 
+wraps the command line tools provided by Xen (xm) as well as Steve Kemps 
+excellent Xen-tools (http://www.xen-tools.org/software/xen-tools/).
+
+ruby-xen is packaged as a Rails Gem which means you can require it from
+a Ruby on Rails project and make use of the classes it provides.
+
+ruby-xen can also be used by ruby code or from irb.
+
+== FEATURES/PROBLEMS:
+
+* FIX (list of features or problems)
+
+== SYNOPSIS:
+
+  FIX (code sample of usage)
+
+== REQUIREMENTS:
+
+xen-tools (http://www.xen-tools.org/software/xen-tools/)
+
+== INSTALL:
+
+sudo gem install ruby-xen
+
+== LICENSE:
+
+ruby-xen is licenced under the GPL. This means that you can use it in commercial 
+or open source applications. More details found here:
+http://www.gnu.org/licenses/gpl.html
+
+ruby-xen
+Copyright (C) 2008 Mike Bailey
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.

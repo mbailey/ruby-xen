@@ -1,0 +1,8 @@
+History.txt
+Manifest.txt
+README.txt
+Rakefile
+bin/ruby-xen
+lib/ruby-xen.rb
+test/test-ruby-xen.rb
+lib/ruby-xen/domain.rb
