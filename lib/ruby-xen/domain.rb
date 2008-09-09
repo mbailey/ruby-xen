@@ -14,18 +14,28 @@ class Array #:nodoc:
 end
 
 module Xen
+  
+  class Commands
+    def self.xm_info
+      `xm info`
+    end
+    def self.xen_list_images
+      `xen-list-images`
+    end    
+  end
+  
   class Host
   
     attr_reader :host, :machine, :total_memory, :free_memory
     def initialize
-      result = `xm info`
+      result = Xen:Commands.xm_info
       result.scan(/(\S+)\s*:\s*([^\n]+)/).each do |i,j| 
         instance_variable_set("@#{i}", j)
       end
     end
     
   end
-
+  
 
   class Domain
   
@@ -75,7 +85,7 @@ module Xen
     end
 
     def self.all
-      result = `xen-list-images`
+      result = Xen::Commands.xen_list_images
       configs = result.scan(/Name: (\w+)\nMemory: (\w+)\nIP: (\S+)/)
       configs.collect do |config|
         name, memory, ip = config
