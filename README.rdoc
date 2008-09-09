@@ -36,7 +36,7 @@ or open source applications. More details found here:
 http://www.gnu.org/licenses/gpl.html
 
 ruby-xen
-Copyright (C) 2008 Mike Bailey
+Copyright (C) 2008 Mike Bailey and Nick Markfleet
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
