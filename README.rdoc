@@ -4,9 +4,9 @@
 
 == DESCRIPTION:
 
-ruby-xen allows you to manage Xen virtual servers via Ruby. It currently 
+ruby-xen is a ruby library for managing Xen virtual servers. It currently 
 wraps the command line tools provided by Xen (xm) as well as Steve Kemps 
-excellent Xen-tools (http://www.xen-tools.org/software/xen-tools/).
+excellent Xen-tools [http://www.xen-tools.org/software/xen-tools/].
 
 ruby-xen is packaged as a Rails Gem which means you can require it from
 a Ruby on Rails project and make use of the classes it provides.
