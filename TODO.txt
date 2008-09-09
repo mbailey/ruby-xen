@@ -1,4 +1,8 @@
 README.txt: include usage examples
+ 
+Add rdoc documentation
+
+Add :dom0 => false to find commands
 
 - If an instance doesn't exist, where should the command for creating it be?
 root@bb:~# irb
