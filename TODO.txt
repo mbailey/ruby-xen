@@ -1,1 +1,18 @@
 README.txt: include usage examples
+
+- If an instance doesn't exist, where should the command for creating it be?
+root@bb:~# irb
+irb(main):001:0> require 'domain'
+=> true
+irb(main):003:0> d = Xen::Domain.find(:apt)
+#<Xen::Config:0x2ab1efbafc68>
+#<Xen::Config:0x2ab1efbafa88>
+#<Xen::Config:0x2ab1efbaf830>
+#<Xen::Config:0x2ab1efbabf28>
+#<Xen::Config:0x2ab1efbabd70>
+#<Xen::Config:0x2ab1efbabca8>
+=> #<Xen::Domain:0x2ab1efbb1e78 @name=:apt, @image=#<Xen::Image:0x2ab1efbac248 @name=:apt>, @config=#<Xen::Config:0x2ab1efbabca8 @name="apt", @ip="192.168.1.158", @memory="512">, @instance=nil>
+irb(main):004:0> d.instance.start
+NoMethodError: undefined method `start' for nil:NilClass
+	from (irb):4
+

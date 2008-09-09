@@ -4,5 +4,5 @@ README.rdoc
 Rakefile
 bin/ruby-xen
 lib/ruby-xen.rb
-test/test-ruby-xen.rb
+test/test_ruby-xen.rb
 lib/ruby-xen/domain.rb
