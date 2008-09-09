@@ -41,8 +41,8 @@ module Xen
     def self.find(*args)
       options = args.extract_options!
       case args.first
-        when :all       then Xen::Config.find(:all, options).collect { |config| XenDomain.new(config.name) }
-        when :running   then Xen::Instance.find(:all, options).collect { |instance| XenDomain.new(instance.name) }
+        when :all       then Xen::Config.find(:all, options).collect { |config| Xen::Domain.new(config.name) }
+        when :running   then Xen::Instance.find(:all, options).collect { |instance| Xen::Domain.new(instance.name) }
         # Retrieve a Domain by name
         else            Xen::Config.find_by_name(args.first) && self.new(args.first)
       end
