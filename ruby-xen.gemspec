@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
   )
   s.require_paths = ['lib']
   # s.test_files = ["test/test_actor.rb"]
-  s.rdoc_options = ["--main", "README.txt"]
+  s.rdoc_options = ["--main", "README.rdoc"]
   s.extra_rdoc_files = ["History.txt", "Manifest.txt", "README.rdoc"]
   # s.add_dependency("diff-lcs", ["> 0.0.0"])
 end
