@@ -1,19 +1,19 @@
-class Array #:nodoc:
-  # Extracts options from a set of arguments. Removes and returns the last
-  # element in the array if it's a hash, otherwise returns a blank hash.
-  #
-  #   def options(*args)
-  #     args.extract_options!
-  #   end
-  #
-  #   options(1, 2)           # => {}
-  #   options(1, 2, :a => :b) # => {:a=>:b}
-  def extract_options!
-    last.is_a?(::Hash) ? pop : {}
-  end
-end
-
 module Xen
+  module Parentable
+    # Returns the parent Domain object (d) for a sub-object. 
+    # We ensure d.instance.object_id == self.object_id
+    # 
+    # ==== Example
+    #   i = Xen::Instance.all[2]
+    #   d = i.domain
+    #   # i.object_id == d.instance.object_id
+    #
+    def domain
+      d = Xen::Domain.new(name)
+      d.instance_variable_set("@#{self.class.to_s.sub('Xen::','').downcase}", self)
+      d
+    end
+  end
   
   class Commands
     def self.xm_info
@@ -25,20 +25,18 @@ module Xen
   end
   
   class Host
-  
     attr_reader :host, :machine, :total_memory, :free_memory
+    
     def initialize
       result = Xen:Commands.xm_info
       result.scan(/(\S+)\s*:\s*([^\n]+)/).each do |i,j| 
         instance_variable_set("@#{i}", j)
       end
     end
-    
   end
   
 
   class Domain
-  
     attr_accessor :name, :image, :config, :instance
   
     def initialize(name)
@@ -51,22 +49,25 @@ module Xen
     def self.find(*args)
       options = args.extract_options!
       case args.first
-        when :all       then Xen::Config.find(:all, options).collect { |config| Xen::Domain.new(config.name) }
-        when :running   then Xen::Instance.find(:all, options).collect { |instance| Xen::Domain.new(instance.name) }
+        when :all       then Xen::Config.find(:all, options).collect { |config| config.domain }
+        when :running   then Xen::Instance.find(:all, options).collect { |instance| instance.domain }
         # Retrieve a Domain by name
         else            Xen::Config.find_by_name(args.first) && self.new(args.first)
       end
+    end
+    
+    def all(options={})
+      self.find(:all, options)
     end
   
     def running?
       @instance
     end
-    
   end
 
 
   class Config
-  
+    include Xen::Parentable
     attr_reader :name, :memory, :ip
   
     def initialize(*args)
@@ -97,12 +98,11 @@ module Xen
       return new('Domain-0') if name == 'Domain-0' 
       all.detect {|config| puts config; config.name == name.to_s}
     end
-  
   end
 
 
   class Image
-  
+    include Xen::Parentable
     attr_accessor :name
   
     def initialize(name)
@@ -112,19 +112,11 @@ module Xen
     def self.find(name)
       new name
     end
-  
-    def find_one(name, options)
-      if result = find_every(options).first
-        result
-      else
-        raise RecordNotFound, "Couldn't find domain with name=#{name}"
-      end
-    end
   end
 
 
   class Instance
-  
+    include Xen::Parentable
     attr_reader :name, :domid, :memory, :cpu_time, :vcpus, :state, :start_time
   
     def initialize(name, options={})
@@ -136,7 +128,7 @@ module Xen
       @state      = options[:state] || nil
       @start_time = options[:start_time] || nil
     end
-  
+    
     def self.find(*args)
       options = args.extract_options!
       case args.first
@@ -169,16 +161,10 @@ module Xen
     #     raise RecordNotFound, "Couldn't find domain with name=#{name}"
     #   end
     # end
-  
+    
     # A convenience wrapper for <tt>find(:dom0)</tt>.</tt>.
-    def dom0(*args)
+    def self.dom0(*args)
       find_by_name(:dom0)
-    end
-
-    # This is an alias for find(:all).  You can pass in all the same arguments to this method as you can
-    # to find(:all)
-    def all(*args)
-      find(:all, *args)
     end
   
     def uptime
@@ -214,26 +200,22 @@ module Xen
   end
 
   class Backup
+    include Xen::Parentable
   end
   
-  # class XenTools
-  # 
-  #   def self.xen_list_images
-  #     puts "returning list of images"
-  #   end
-  # 
-  #   def xen_create_image
-  #     puts "creating image"
-  #   end
-  # 
-  #   def xen_delete_image
-  #     puts "creating image"
-  #   end
-  # 
-  #   def xen_archive_image
-  #     puts "archiving image"
-  #   end
-  # 
-  # end
+end
 
+class Array #:nodoc:
+  # Extracts options from a set of arguments. Removes and returns the last
+  # element in the array if it's a hash, otherwise returns a blank hash.
+  #
+  #   def options(*args)
+  #     args.extract_options!
+  #   end
+  #
+  #   options(1, 2)           # => {}
+  #   options(1, 2, :a => :b) # => {:a=>:b}
+  def extract_options!
+    last.is_a?(::Hash) ? pop : {}
+  end
 end
