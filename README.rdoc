@@ -1,6 +1,7 @@
 = ruby-xen
 
-* FIX (url)
+http://github.com/mbailey/ruby-xen
+
 
 == DESCRIPTION:
 
