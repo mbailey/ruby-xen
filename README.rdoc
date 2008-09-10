@@ -1,5 +1,7 @@
 = ruby-xen
 
+# Warning! Not ready yet - project started Sep 2008
+
 http://github.com/mbailey/ruby-xen
 
 
@@ -20,11 +22,16 @@ ruby-xen can also be used by ruby code or from irb.
 
 == SYNOPSIS:
 
-  FIX (code sample of usage)
+  require 'rubygems'
+  require 'ruby-xen'
+  domains = Xen::Domain.find(:all)
+  domains[1].running? # true
+  domains[1].instance.shutdown
 
 == REQUIREMENTS:
 
-xen-tools (http://www.xen-tools.org/software/xen-tools/)
+ruby-xen must be run as root as it uses Xen's 'xm' command.
+xen-tools must be installed (http://www.xen-tools.org/software/xen-tools/)
 
 == INSTALL:
 
