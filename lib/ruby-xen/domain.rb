@@ -1,8 +1,8 @@
 module Xen
   
   # Sensible defaults
-  # XEN_DOMU_CONFIG_DIR = '/etc/xen'
-  XEN_DOMU_CONFIG_DIR = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '/spec/fixtures/xen_domu_configs'))
+  XEN_DOMU_CONFIG_DIR = '/etc/xen'
+  # XEN_DOMU_CONFIG_DIR = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '/spec/fixtures/xen_domu_configs'))
   
   
   module Parentable
