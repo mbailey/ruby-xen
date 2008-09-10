@@ -1,25 +1,14 @@
 module Xen
   
-  # Sensible defaults
+  # Location of Xen config files
   XEN_DOMU_CONFIG_DIR = '/etc/xen'
   # XEN_DOMU_CONFIG_DIR = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '/spec/fixtures/xen_domu_configs'))
   
-  
-  module Parentable
-    # Returns the parent Domain object (d) for a sub-object. 
-    # We ensure d.instance.object_id == self.object_id
-    # 
-    # ==== Example
-    #   i = Xen::Instance.all[2]
-    #   d = i.domain
-    #   # i.object_id == d.instance.object_id
-    #
-    def domain
-      d = Xen::Domain.new(name)
-      d.instance_variable_set("@#{self.class.to_s.sub('Xen::','').downcase}", self)
-      d
-    end
-  end
+  # We don't want out library to hit Xen too often (premature optimization perhaps?)
+  # so we keep information about Xen instances in an object. Specify how long before
+  # the object expires.
+  INSTANCE_OBJECT_LIFETIME = 1   
+                                
   
   class Commands
     def self.xm_info
@@ -29,6 +18,7 @@ module Xen
       `xen-list-images`
     end    
   end
+  
   
   class Host
     attr_reader :host, :machine, :total_memory, :free_memory
@@ -43,7 +33,7 @@ module Xen
   
 
   class Domain
-    attr_accessor :name, :image, :config, :instance
+    attr_accessor :name, :image, :config
   
     def initialize(name)
       @name = name
@@ -52,6 +42,14 @@ module Xen
       @image = Xen::Image.find(name)
     end
   
+    def instance
+      if @instance && @instance.object_expires > Time.now
+        @instance
+      else
+        @instance = Xen::Instance.find(@name)
+      end
+    end
+    
     def self.find(*args)
       options = args.extract_options!
       case args.first
@@ -67,11 +65,39 @@ module Xen
     end
   
     def running?
-      @instance
+      self.instance ? true : false
+    end
+    
+    def start
+      Xen::Instance.create(@name)
+      @instance = Xen::Instance.find(@name)
+    end
+    
+    def stop
+      Xen::Instance.shutdown(@name)
+      @instance = Xen::Instance.find(@name)
+    end
+    
+  end
+
+  # DRY up some classes (children of Domain) with some module funkiness.
+  module Parentable
+    # Returns the parent Domain object (d) for a sub-object. 
+    # We ensure d.instance.object_id == self.object_id
+    # 
+    # ==== Example
+    #   i = Xen::Instance.all[2]
+    #   d = i.domain
+    #   # i.object_id == d.instance.object_id
+    #
+    def domain
+      d = Xen::Domain.new(name)
+      d.instance_variable_set("@#{self.class.to_s.sub('Xen::','').downcase}", self)
+      d
     end
   end
 
-
+  # The Xen config files on disk
   class Config
     include Xen::Parentable
     attr_accessor :name, :kernel, :ramdisk, :memory, :root, :disk, :vif, :on_poweroff, :on_reboot, :on_crash, :extra
@@ -112,14 +138,14 @@ module Xen
       create_from_config_file(File.read(filename))
     end
     
-    def save
-      puts "I saved the config!"
-    end
-    
     def self.create_from_config_file(config)
       name, kernel, ramdisk, memory, root, disk, vif, on_poweroff, on_reboot, on_crash, extra = nil
       eval(config)
       new(name, :disk => disk, :kernel => kernel, :ramdisk => ramdisk, :memory => memory, :root => root, :disk => disk, :vif => vif, :on_poweroff => on_poweroff, :on_reboot => on_reboot, :on_crash => on_crash, :extra => extra)
+    end
+    
+    def save
+      puts "I saved the config!"
     end
     
   end
@@ -141,7 +167,7 @@ module Xen
 
   class Instance
     include Xen::Parentable
-    attr_reader :name, :domid, :memory, :cpu_time, :vcpus, :state, :start_time
+    attr_reader :name, :domid, :memory, :cpu_time, :vcpus, :state, :start_time, :object_expires
   
     def initialize(name, options={})
       @name       = name
@@ -151,6 +177,7 @@ module Xen
       @vcpus      = options[:vcpus] || nil
       @state      = options[:state] || nil
       @start_time = options[:start_time] || nil
+      @object_expires = Time.now + Xen::INSTANCE_OBJECT_LIFETIME
     end
     
     def self.find(*args)
@@ -186,6 +213,16 @@ module Xen
     #   end
     # end
     
+    def self.create(name)
+      output = `xm create #{name}.cfg`
+      $? == 0 ? true : false
+    end
+    
+    def self.shutdown(name)
+      output = `xm shutdown #{name}`
+      $? == 0 ? true : false
+    end
+    
     # A convenience wrapper for <tt>find(:dom0)</tt>.</tt>.
     def self.dom0(*args)
       find_by_name(:dom0)
@@ -197,16 +234,6 @@ module Xen
   
     def running?
       output = `xm list #{name}`
-      $? == 0 ? true : false
-    end
-  
-    def start
-      output = `xm create #{name}.cfg`
-      $? == 0 ? true : false
-    end
-  
-    def shutdown
-      output = `xm shutdown #{name}`
       $? == 0 ? true : false
     end
   

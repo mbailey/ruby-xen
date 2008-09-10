@@ -24,9 +24,14 @@ ruby-xen can also be used by ruby code or from irb.
 
   require 'rubygems'
   require 'ruby-xen'
-  domains = Xen::Domain.find(:all)
-  domains[1].running? # true
-  domains[1].instance.shutdown
+
+
+  domain = Xen::Domain.find(:example)
+  domain.running? # true
+  domain.stop
+  domain.running? # false
+  domain.start
+  domain.running? # true
 
 == REQUIREMENTS:
 
