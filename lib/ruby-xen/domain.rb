@@ -1,4 +1,10 @@
 module Xen
+  
+  # Sensible defaults
+  # XEN_DOMU_CONFIG_DIR = '/etc/xen'
+  XEN_DOMU_CONFIG_DIR = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '/spec/fixtures/xen_domu_configs'))
+  
+  
   module Parentable
     # Returns the parent Domain object (d) for a sub-object. 
     # We ensure d.instance.object_id == self.object_id
@@ -68,13 +74,21 @@ module Xen
 
   class Config
     include Xen::Parentable
-    attr_reader :name, :memory, :ip
+    attr_accessor :name, :kernel, :ramdisk, :memory, :root, :disk, :vif, :on_poweroff, :on_reboot, :on_crash, :extra
   
     def initialize(*args)
       options = args.extract_options!
       @name = args.first
+      @kernel = options[:kernel] || nil
+      @ramdisk = options[:ramdisk] || nil
       @memory = options[:memory] || nil
-      @ip = options[:ip] || nil
+      @root = options[:root] || nil
+      @disk = options[:disk] || nil
+      @vif = options[:vif] || nil
+      @on_poweroff = options[:on_poweroff] || nil
+      @on_reboot = options[:on_reboot] || nil
+      @on_crash = options[:on_crash] || nil
+      @extra = options[:extra] || nil
     end
   
     def self.find(*args)
@@ -86,18 +100,28 @@ module Xen
     end
 
     def self.all
-      result = Xen::Commands.xen_list_images
-      configs = result.scan(/Name: (\w+)\nMemory: (\w+)\nIP: (\S+)/)
-      configs.collect do |config|
-        name, memory, ip = config
-        new(name, :memory => memory, :ip => ip)
+      config_files = Dir.glob("#{Xen::XEN_DOMU_CONFIG_DIR}/*.cfg")
+      config_files.collect do |filename|
+        create_from_config_file(File.read(filename))
       end
     end    
   
     def self.find_by_name(name)
       return new('Domain-0') if name == 'Domain-0' 
-      all.detect {|config| puts config; config.name == name.to_s}
+      filename = "#{Xen::XEN_DOMU_CONFIG_DIR}/#{name}.cfg"
+      create_from_config_file(File.read(filename))
     end
+    
+    def save
+      puts "I saved the config!"
+    end
+    
+    def self.create_from_config_file(config)
+      name, kernel, ramdisk, memory, root, disk, vif, on_poweroff, on_reboot, on_crash, extra = nil
+      eval(config)
+      new(name, :disk => disk, :kernel => kernel, :ramdisk => ramdisk, :memory => memory, :root => root, :disk => disk, :vif => vif, :on_poweroff => on_poweroff, :on_reboot => on_reboot, :on_crash => on_crash, :extra => extra)
+    end
+    
   end
 
 
