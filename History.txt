@@ -1,3 +1,8 @@
+=== 0.0.2 / 2008-09-11
+
+* Broke out classes into separate files
+* Added rspec outline
+
 === 0.0.1 / 2008-09-08
 
 * Initial import
