@@ -1,6 +1,29 @@
 write out config
+- new classes: vbd, vif
+
+? should the module be called RubyXen ?
+
+when running external commands
+- check return value and throw exception if non zero
+
+rip other external commands into Commands
+- xm_list
 
 
+
+# show when config file is newer than instance
+
+	def domain.config_updated_since_last_restart
+	  Config#updated_at > Instance#start_time
+	end
+
+	def config.updated_at
+	  File.mtime(self.filename)
+	end
+
+
+
+? should domain.rb be broken down into separate files ?
 ? how do we define an instance method that calls the class method:
 
 	def self.shutdown(name)
@@ -8,11 +31,16 @@ write out config
 	  $? == 0 ? true : false
 	end
 	
-? or should that be the other way around?
+	? or should that be the other way around?
 
-warn if not running as root
+'on_require' method
+- Warn if not running as root
+- warn if 'xm' missing
+- warn if 'xen-tools' missing
 
-Add rdoc documentation
+Add rdoc documentation to code
+
+Add specs
 
 Add :dom0 => false to find commands
 

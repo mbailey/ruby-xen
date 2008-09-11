@@ -1,0 +1,26 @@
+host                   : xen01
+release                : 2.6.22-14-xen
+version                : #1 SMP Tue Dec 18 07:06:28 UTC 2007
+machine                : x86_64
+nr_cpus                : 4
+nr_nodes               : 1
+sockets_per_node       : 1
+cores_per_socket       : 4
+threads_per_core       : 1
+cpu_mhz                : 1600
+hw_caps                : bfebfbff:20100800:00000000:00000140:0004e33d:00000000:00000001
+total_memory           : 16382
+free_memory            : 2268
+xen_major              : 3
+xen_minor              : 1
+xen_extra              : .0
+xen_caps               : xen-3.0-x86_64 xen-3.0-x86_32p 
+xen_scheduler          : credit
+xen_pagesize           : 4096
+platform_params        : virt_start=0xffff800000000000
+xen_changeset          : unavailable
+cc_compiler            : gcc version 4.1.3 20070929 (prerelease) (Ubuntu 4.1.2-16ubuntu2
+cc_compile_by          : buildd
+cc_compile_domain      : buildd
+cc_compile_date        : Fri Oct 12 16:26:34 GMT 2007
+xend_config_format     : 4
