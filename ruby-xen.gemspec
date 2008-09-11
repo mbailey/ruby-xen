@@ -18,7 +18,13 @@ Gem::Specification.new do |s|
     bin/ruby-xen
     lib/ruby-xen.rb
     test/test_ruby-xen.rb
-    lib/ruby-xen/domain.rb
+    lib/xen/backup.rb
+    lib/xen/command.rb
+    lib/xen/config.rb
+    lib/xen/domain.rb
+    lib/xen/host.rb
+    lib/xen/image.rb
+    lib/xen/instance.rb
   )
   s.require_paths = ['lib']
   # s.test_files = ["test/test_actor.rb"]
