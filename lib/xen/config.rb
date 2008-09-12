@@ -1,3 +1,5 @@
+require 'erb'
+
 # The Xen config files on disk
 class Xen::Config
   include Xen::Parentable
@@ -39,6 +41,10 @@ class Xen::Config
     create_from_config_file(File.read(filename))
   end
   
+  def config_file
+    "#{Xen::XEN_DOMU_CONFIG_DIR}/#{name}.cfg"
+  end
+  
   def self.create_from_config_file(config)
     name, kernel, ramdisk, memory, root, disk, vif, on_poweroff, on_reboot, on_crash, extra = nil
     eval(config)
@@ -46,7 +52,8 @@ class Xen::Config
   end
   
   def save
-    puts "I saved the config!"
+    template = ERB.new IO.read(Xen::TEMPLATE_DIR + '/domu.cfg.erb')
+    File.open(config_file, 'w'){ |f| f.write template.result(binding) }
   end
   
 end
