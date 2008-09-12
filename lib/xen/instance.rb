@@ -9,7 +9,7 @@ class Xen::Instance
     @cpu_time   = options[:cpu_time]
     @vcpus      = options[:vcpus]
     @state      = options[:state]
-    @start_time = options[:start_time]
+    @start_time = Time.at(options[:start_time].to_f) if options[:start_time]
     @object_expires = Time.now + Xen::INSTANCE_OBJECT_LIFETIME
   end
 
@@ -22,18 +22,15 @@ class Xen::Instance
   end
 
   def self.all
-    result = Xen::Command.xm_list
-    # XXX check for failed command
-    result_array = result.split("\n")
-    result_array.shift
-    result_array.collect do |domain|
-      name, domid, memory, vcpus, state, cpu_time = domain.scan(/[^ ,]+/)
-      new(name, :domid => domid, :memory => memory, :cpu_time => cpu_time)
+    Xen::Command.detailed_instance_list.collect do |instance|
+      new(name, instance)
     end
   end
 
   def self.find_by_name(name)
-    all.detect{|domain| domain.name == name.to_s }
+    Xen::Command.detailed_instance_list(name).each do |instance|
+      return new(name, instance)
+    end
   end
 
   # XXX Rails version - we need some error checking! 

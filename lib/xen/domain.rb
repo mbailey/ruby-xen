@@ -44,4 +44,8 @@ class Xen::Domain
     @instance = Xen::Instance.find(@name)
   end
   
+  def config_updated_since_instance_started
+	  instance && config.updated_at > instance.start_time 
+	end
+  
 end
