@@ -45,6 +45,10 @@ class Xen::Config
     "#{Xen::XEN_DOMU_CONFIG_DIR}/#{name}.cfg"
   end
   
+  def updated_at
+	  File.mtime(config_file)
+	end
+  
   def self.create_from_config_file(config)
     name, kernel, ramdisk, memory, root, disk, vif, on_poweroff, on_reboot, on_crash, extra = nil
     eval(config)
