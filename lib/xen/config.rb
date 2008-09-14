@@ -3,7 +3,7 @@ require 'erb'
 # The Xen config files on disk
 class Xen::Config
   include Xen::Parentable
-  attr_accessor :name, :kernel, :ramdisk, :memory, :root, :disk, :vif, :on_poweroff, :on_reboot, :on_crash, :extra
+  attr_accessor :name, :kernel, :ramdisk, :memory, :root, :vbds, :vifs, :on_poweroff, :on_reboot, :on_crash, :extra
 
   def initialize(*args)
     options = args.extract_options!
@@ -12,8 +12,8 @@ class Xen::Config
     @ramdisk = options[:ramdisk]
     @memory = options[:memory]
     @root = options[:root]
-    @disk = options[:disk]
-    @vif = options[:vif]
+    @vbds = options[:vbds]
+    @vifs = options[:vifs]
     @on_poweroff = options[:on_poweroff]
     @on_reboot = options[:on_reboot]
     @on_crash = options[:on_crash]
@@ -52,7 +52,9 @@ class Xen::Config
   def self.create_from_config_file(config)
     name, kernel, ramdisk, memory, root, disk, vif, on_poweroff, on_reboot, on_crash, extra = nil
     eval(config)
-    new(name, :disk => disk, :kernel => kernel, :ramdisk => ramdisk, :memory => memory, :root => root, :disk => disk, :vif => vif, :on_poweroff => on_poweroff, :on_reboot => on_reboot, :on_crash => on_crash, :extra => extra)
+    vifs = Array(vif).collect { |v| Vif.from_str(v) }
+    vbds = Array(disk).collect { |d| Vbd.from_str(d) }
+    new(name, :disk => disk, :kernel => kernel, :ramdisk => ramdisk, :memory => memory, :root => root, :vbds => vbds, :vifs => vifs, :on_poweroff => on_poweroff, :on_reboot => on_reboot, :on_crash => on_crash, :extra => extra)
   end
   
   def save
@@ -60,4 +62,56 @@ class Xen::Config
     File.open(config_file, 'w'){ |f| f.write template.result(binding) }
   end
   
+  # Virtual Network Interface
+  #
+  # http://wiki.xensource.com/xenwiki/XenNetworking
+  #
+  class Vif
+    attr_accessor :ip, :mac, :bridge, :vifname
+    def initialize(*args)
+      options = args.extract_options!
+      @ip = options[:ip] 
+      @mac = options[:mac]
+      @bridge = options[:bridge]
+      @vifname = options[:vifname]
+    end
+  
+    def self.from_str(value)
+      options = value.scan(/(\w+)=([^,]+)/).inject({}){ |m, (k, v)| m[k.to_sym] = v; m }
+      new(options)
+    end
+  
+    def to_str
+      %w(ip mac bridge vifname).collect { |key| 
+        "#{key}=#{instance_variable_get('@' + key)}" if !instance_variable_get('@'+key).nil?
+      }.compact.join(',')
+    end 
+  end
+
+  # Virtual Block Interface
+  #
+  # http://wiki.xensource.com/xenwiki/XenStorage
+  #
+  # == Example 
+  #
+  #   disk        = [ 'phy:xendisks/example-disk,sda1,w', 
+  #                   'phy:xendisks/example-swap,sda2,w',
+  #                   'phy:assets/example-assets,sdb1,w' ]
+  class Vbd
+    attr_accessor :dom0, :domu, :mode
+    def initialize(dom0, domu, mode='w')
+      @dom0, @domu, @mode = dom0, domu, mode
+    end
+  
+    def self.from_str(value)
+      dom0, domu, mode = value.split(',')
+      new(dom0, domu, mode)
+    end
+  
+    def to_str
+      "#{dom0},#{domu},#{mode}"
+    end 
+  end
+
 end
+
