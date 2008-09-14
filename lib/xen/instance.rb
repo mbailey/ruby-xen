@@ -31,6 +31,7 @@ class Xen::Instance
     Xen::Command.detailed_instance_list(name).each do |instance|
       return new(name, instance)
     end
+    return false
   end
 
   # XXX Rails version - we need some error checking! 
