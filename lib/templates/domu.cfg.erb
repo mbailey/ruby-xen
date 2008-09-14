@@ -15,7 +15,7 @@ memory      = '<%= memory %>'
 #
 root        = '<%= root %>'
 disk        = [ 
-	'<%= Array(disk).join("',\n\t'") %>' 
+	'<%= Array(vbds).collect{|d| d.to_str}.join("',\n\t'") %>' 
 ]
 
 #
@@ -27,7 +27,7 @@ name        = '<%= name %>'
 #  Networking
 #
 vif         = [
-	'<%= Array(vif).join("',\n\t'") %>'
+	'<%= Array(vifs).collect{|v| v.to_str}.join("',\n\t'") %>'
 ]
 
 #
