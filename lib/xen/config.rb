@@ -88,7 +88,8 @@ class Xen::Config
     end 
   end
 
-  # Virtual Block Interface
+
+  # Virtual Network Interface
   #
   # http://wiki.xensource.com/xenwiki/XenStorage
   #
