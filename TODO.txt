@@ -1,3 +1,5 @@
+rename :domain to :slice?
+
 - new classes: vbd, vif
 
 ? should the module be called RubyXen ?
