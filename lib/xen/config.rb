@@ -29,7 +29,7 @@ class Xen::Config
   end
 
   def self.all
-    config_files = Dir.glob("#{Xen::XEN_DOMU_CONFIG_DIR}/*.cfg")
+    config_files = Dir.glob("#{Xen::XEN_DOMU_CONFIG_DIR}/*#{Xen::CONFIG_FILE_EXTENSION}")
     config_files.collect do |filename|
       create_from_config_file(File.read(filename))
     end
@@ -37,16 +37,16 @@ class Xen::Config
 
   def self.find_by_name(name)
     return new('Domain-0') if name == 'Domain-0' 
-    filename = "#{Xen::XEN_DOMU_CONFIG_DIR}/#{name}.cfg"
+    filename = "#{Xen::XEN_DOMU_CONFIG_DIR}/#{name}#{Xen::CONFIG_FILE_EXTENSION}"
     create_from_config_file(File.read(filename))
   end
     
   def config_file
-    "#{Xen::XEN_DOMU_CONFIG_DIR}/#{name}.cfg"
+    "#{Xen::XEN_DOMU_CONFIG_DIR}/#{name}#{Xen::CONFIG_FILE_EXTENSION}"
   end
   
   def auto_file
-    "#{Xen::XEN_DOMU_CONFIG_DIR}/auto/#{name}.cfg"
+    "#{Xen::XEN_DOMU_CONFIG_DIR}/auto/#{name}#{Xen::CONFIG_FILE_EXTENSION}"
   end
   
   def updated_at
