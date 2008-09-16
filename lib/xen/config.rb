@@ -65,7 +65,7 @@ class Xen::Config
   
   # Returns true|false depending on whether slice is set to start automatically
   def auto
-    File.symlink?(auto_file) && File.readlink(auto_file) == "../#{File.basename(config_file)}"
+    File.symlink?(auto_file) && File.expand_path(File.readlink(auto_file), File.dirname(auto_file)) == config_file
   end
   
   def self.create_from_config_file(config)
