@@ -45,12 +45,12 @@ class Xen::Instance
   # end
 
   def self.create(name)
-    output = `xm create #{name}.cfg`
+    output = Xen::Command.create(name.to_s + Xen::CONFIG_FILE_EXTENSION)
     $? == 0 ? true : false
   end
 
   def self.shutdown(name)
-    output = `xm shutdown #{name}`
+    output = Xen::Command.shutdown(name)
     $? == 0 ? true : false
   end
 
@@ -61,11 +61,6 @@ class Xen::Instance
 
   def uptime
     start_time ? Time.now - start_time : nil
-  end
-
-  def running?
-    output = `xm list #{name}`
-    $? == 0 ? true : false
   end
 
   def reboot

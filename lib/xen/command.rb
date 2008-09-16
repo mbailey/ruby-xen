@@ -15,9 +15,16 @@ class Xen::Command
     end
   end
   
+  def self.create(config_file)
+    `xm create #{config_file}`
+  end
+  
+  def self.shutdown(name, blocking=false)
+    `xm shutdown #{'-w' if blocking} #{name}`
+  end  
+    
   def self.xm_info
     result = `xm info`
     result.scan(/(\S+)\s*:\s*([^\n]+)/).inject({}){ |m, (i,j)| m[i.to_sym] = j; m }
-    
   end
 end

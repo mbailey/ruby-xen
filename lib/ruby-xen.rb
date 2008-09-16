@@ -25,6 +25,9 @@ module Xen
   
   TEMPLATE_DIR = File.expand_path(File.dirname(__FILE__) + '/../lib/templates')
   
+  # Extension for Xen domU config files
+  CONFIG_FILE_EXTENSION = '.cfg'
+  
   # DRY up some classes (children of Domain) with some module funkiness.
   module Parentable
     # Returns the parent Domain object (d) for a sub-object. 

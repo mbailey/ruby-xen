@@ -11,7 +11,7 @@ External commands
 
 # status = shutting down
 
-Shutdown can take a while, during which time the status of the slice is running.
+Shutdown can take a while, during which time the status of the slice is 'running'.
 We could put the shutdown command into a queue which could be externally queried.
 A background job could perform the shutdowns and update the queue. Same queuing
 system could be used to create slices.
