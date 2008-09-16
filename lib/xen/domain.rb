@@ -30,6 +30,10 @@ class Xen::Domain
     self.find(:all, options)
   end
 
+  def state
+    self.instance ? :running : :stopped
+  end
+    
   def running?
     self.instance ? true : false
   end
