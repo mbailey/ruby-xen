@@ -9,7 +9,7 @@ lib/ruby-xen/domain.rb
 lib/xen/backup.rb
 lib/xen/command.rb
 lib/xen/config.rb
-lib/xen/domain.rb
+lib/xen/slice.rb
 lib/xen/host.rb
 lib/xen/image.rb
 lib/xen/instance.rb

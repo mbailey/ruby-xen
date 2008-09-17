@@ -28,18 +28,19 @@ module Xen
   # Extension for Xen domU config files
   CONFIG_FILE_EXTENSION = '.cfg'
   
-  # DRY up some classes (children of Domain) with some module funkiness.
+  # DRY up some classes (children of Slice) with some module funkiness.
   module Parentable
-    # Returns the parent Domain object (d) for a sub-object. 
+    # Returns the parent Slice object (d) for a sub-object. 
     # We ensure d.instance.object_id == self.object_id
     # 
     # ==== Example
     #   i = Xen::Instance.all[2]
-    #   d = i.domain
-    #   # i.object_id == d.instance.object_id
+    #   s = i.slice
+    #   i.object_id == s.instance.object_id # true
     #
-    def domain
-      d = Xen::Domain.new(name)
+    def slice
+      d = Xen::Slice.new(name)
+      # Insert the current object into the newly created Slice's attributes
       d.instance_variable_set("@#{self.class.to_s.sub('Xen::','').downcase}", self)
       d
     end
@@ -49,7 +50,7 @@ end
 require "#{File.dirname(__FILE__)}/xen/backup"
 require "#{File.dirname(__FILE__)}/xen/command"
 require "#{File.dirname(__FILE__)}/xen/config"
-require "#{File.dirname(__FILE__)}/xen/domain"
+require "#{File.dirname(__FILE__)}/xen/slice"
 require "#{File.dirname(__FILE__)}/xen/host"
 require "#{File.dirname(__FILE__)}/xen/image"
 require "#{File.dirname(__FILE__)}/xen/instance"

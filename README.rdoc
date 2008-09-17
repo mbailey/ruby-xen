@@ -25,12 +25,12 @@ ruby-xen can also be used by ruby code or from irb.
   require 'rubygems'
   require 'ruby-xen'
 
-  domain = Xen::Domain.find(:example)
-  domain.running? # true
-  domain.stop
-  domain.running? # false
-  domain.start
-  domain.running? # true
+  slice = Xen::Slice.find(:example)
+  slice.running? # true
+  slice.stop
+  slice.running? # false
+  slice.start
+  slice.running? # true
 
 == REQUIREMENTS:
 

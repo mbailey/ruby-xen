@@ -34,16 +34,6 @@ class Xen::Instance
     return false
   end
 
-  # XXX Rails version - we need some error checking! 
-  #
-  # def self.find_by_name(name, options)
-  #   if result = find_every(options)
-  #     result.detect{ |domain| domain.name == name }
-  #   else
-  #     raise RecordNotFound, "Couldn't find domain with name=#{name}"
-  #   end
-  # end
-
   def self.create(name)
     output = Xen::Command.create(name.to_s + Xen::CONFIG_FILE_EXTENSION)
     $? == 0 ? true : false

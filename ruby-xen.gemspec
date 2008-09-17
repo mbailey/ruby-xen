@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
     lib/xen/backup.rb
     lib/xen/command.rb
     lib/xen/config.rb
-    lib/xen/domain.rb
+    lib/xen/slice.rb
     lib/xen/host.rb
     lib/xen/image.rb
     lib/xen/instance.rb
