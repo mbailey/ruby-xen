@@ -1,6 +1,6 @@
 class Xen::Instance
   include Xen::Parentable
-  attr_reader :name, :domid, :memory, :cpu_time, :vcpus, :state, :start_time, :object_expires
+  attr_reader :name, :domid, :memory, :cpu_time, :vcpus, :state, :start_time
 
   def initialize(name, options={})
     @name       = name
@@ -10,7 +10,6 @@ class Xen::Instance
     @vcpus      = options[:vcpus]
     @state      = options[:state]
     @start_time = Time.at(options[:start_time].to_f) if options[:start_time]
-    @object_expires = Time.now + Xen::INSTANCE_OBJECT_LIFETIME
   end
 
   def self.find(*args)

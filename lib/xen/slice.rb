@@ -5,13 +5,16 @@ class Xen::Slice
     @name = name
     @config = Xen::Config.find(name)
     @instance = Xen::Instance.find(name)
+    @instance_cache_expires = Time.now + Xen::INSTANCE_OBJECT_LIFETIME
     @image = Xen::Image.find(name)
   end
 
+  # Cache Xen instance info to reduce system calls to xm command.
   def instance
-    if @instance && @instance.object_expires > Time.now
+    if @instance_cache_expires > Time.now
       @instance
     else
+      @instance_cache_expires = Time.now + Xen::INSTANCE_OBJECT_LIFETIME
       @instance = Xen::Instance.find(@name)
     end
   end

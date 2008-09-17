@@ -21,7 +21,7 @@ module Xen
   # We don't want out library to hit Xen too often (premature optimization perhaps?)
   # so we keep information about Xen instances in an object. Specify how long before
   # the object expires.
-  INSTANCE_OBJECT_LIFETIME = 1
+  INSTANCE_OBJECT_LIFETIME = 5
   
   TEMPLATE_DIR = File.expand_path(File.dirname(__FILE__) + '/../lib/templates')
   

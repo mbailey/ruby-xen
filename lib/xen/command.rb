@@ -8,7 +8,8 @@ class Xen::Command
   # end
   
   def self.detailed_instance_list(name='')
-    raw_entries = `xm list --long #{name}`.split(/\n\(domain/)
+    cmd = "xm list --long #{name}"
+    raw_entries = `#{cmd}`.split(/\n\(domain/)
     raw_entries.collect do |entry|
       attributes = entry.scan(/\((name|domid|memory|vcpus|state|cpu_time|start_time) (.*)\)/)
       attributes.inject({}) { |m, (key, val)| m[key.to_sym] = val; m } 
