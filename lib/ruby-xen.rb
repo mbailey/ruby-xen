@@ -13,6 +13,19 @@ class Array #:nodoc:
   end
 end
 
+class Hash #:nodoc:
+  # Converts a Hash into an array of key=val formatted strings
+  #
+  # puts { :nics => 2, :vcpus => 1, :memory => 64 }.to_args 
+  #
+  # produces:
+  #
+  # ["memory=64", "nics=2", "vcpus=1"]
+  def to_args
+    collect{|k,v| "#{k}=#{v}"}
+  end
+end
+
 module Xen
   # Location of Xen config files
   XEN_DOMU_CONFIG_DIR = '/etc/xen'

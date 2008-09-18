@@ -9,14 +9,8 @@ class Xen::Slice
     @image = Xen::Image.find(name)
   end
 
-  # Cache Xen instance info to reduce system calls to xm command.
-  def instance
-    if @instance_cache_expires > Time.now
-      @instance
-    else
-      @instance_cache_expires = Time.now + Xen::INSTANCE_OBJECT_LIFETIME
-      @instance = Xen::Instance.find(@name)
-    end
+  def self.create(args)
+    args = hash.collect{|k,v| "#{k}=#{v}"}
   end
   
   def self.find(*args)
@@ -29,8 +23,18 @@ class Xen::Slice
     end
   end
   
-  def all(options={})
+  def self.all(options={})
     self.find(:all, options)
+  end
+  
+  # Cache Xen instance info to reduce system calls to xm command.
+  def instance
+    if @instance_cache_expires > Time.now
+      @instance
+    else
+      @instance_cache_expires = Time.now + Xen::INSTANCE_OBJECT_LIFETIME
+      @instance = Xen::Instance.find(@name)
+    end
   end
 
   def state
@@ -54,5 +58,7 @@ class Xen::Slice
   def config_newer_than_instance?
 	  instance && config.updated_at > instance.start_time 
 	end
+  
+
   
 end

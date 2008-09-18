@@ -1,21 +1,18 @@
-- new classes: vbd, vif
+slice.create
+slice.destroy
 
-? should the module be called RubyXen ?
+Add specs
 
 External commands
 - check return value and throw exception if non zero
 - rip all other external commands into Commands
 
+'on_require' method
+- Warn if not running as root
+- warn if 'xm' missing
+- warn if 'xen-tools' missing
 
-# status = shutting down
-
-Shutdown can take a while, during which time the status of the slice is 'running'.
-We could put the shutdown command into a queue which could be externally queried.
-A background job could perform the shutdowns and update the queue. Same queuing
-system could be used to create slices.
-
-xm shutdown :slice -w # wait for shutdown to complete before returning
-
+? should the module be called RubyXen ?
 
 ? how do we define an instance method that calls the class method:
 
@@ -26,15 +23,8 @@ xm shutdown :slice -w # wait for shutdown to complete before returning
 	
 	? or should that be the other way around?
 
-'on_require' method
-- Warn if not running as root
-- warn if 'xm' missing
-- warn if 'xen-tools' missing
 
-Add rdoc documentation to code
-
-Add specs
 
 Add :dom0 => false to find commands
 
-
+Add rdoc documentation to code

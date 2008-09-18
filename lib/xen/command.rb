@@ -16,13 +16,22 @@ class Xen::Command
     end
   end
   
-  def self.create(config_file)
+  def self.start_instance(config_file)
     `xm create #{config_file}`
   end
   
-  def self.shutdown(name, blocking=false)
+  def self.shutdown_instance(name, blocking=false)
     `xm shutdown #{'-w' if blocking} #{name}`
-  end  
+  end
+  
+  # Xen::Command.create_image('memory=512', :size => '10Gb')
+  # => "xm-create-image memory=512 size=10Gb"
+  #
+  def self.create_image(*args)
+    options = args.extract_options!
+    cmd = "xm-create-image #{args.concat(options.to_args).join(' ')}"
+    `cmd`
+  end
     
   def self.xm_info
     result = `xm info`

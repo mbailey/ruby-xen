@@ -34,12 +34,12 @@ class Xen::Instance
   end
 
   def self.create(name)
-    output = Xen::Command.create(name.to_s + Xen::CONFIG_FILE_EXTENSION)
+    output = Xen::Command.start_instance(name.to_s + Xen::CONFIG_FILE_EXTENSION)
     $? == 0 ? true : false
   end
 
   def self.shutdown(name)
-    output = Xen::Command.shutdown(name)
+    output = Xen::Command.shutdown_instance(name)
     $? == 0 ? true : false
   end
 
