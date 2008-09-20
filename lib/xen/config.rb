@@ -1,7 +1,7 @@
 require 'erb'
 
-# The Xen config files on disk
 class Xen::Config
+  # The config files for each Xen domU
   include Xen::Parentable
   attr_accessor :name, :kernel, :ramdisk, :memory, :root, :vbds, :vifs, :on_poweroff, :on_reboot, :on_crash, :extra
 
@@ -38,7 +38,7 @@ class Xen::Config
   def self.find_by_name(name)
     return new('Domain-0') if name == 'Domain-0' 
     filename = "#{Xen::XEN_DOMU_CONFIG_DIR}/#{name}#{Xen::CONFIG_FILE_EXTENSION}"
-    create_from_config_file(File.read(filename))
+    create_from_config_file(File.read(filename)) if File.exists?(filename)
   end
     
   def config_file
@@ -111,7 +111,9 @@ class Xen::Vif
 end
 
 
-# Virtual Network Interface
+# Virtual Block Device
+#
+# We're only supporting Logical Volumes. No loopback devices.
 #
 # http://wiki.xensource.com/xenwiki/XenStorage
 #
@@ -121,18 +123,23 @@ end
 #                   'phy:xendisks/example-swap,sda2,w',
 #                   'phy:assets/example-assets,sdb1,w' ]
 class Xen::Vbd
-  attr_accessor :dom0, :domu, :mode
-  def initialize(dom0, domu, mode='w')
-    @dom0, @domu, @mode = dom0, domu, mode
+  attr_accessor :name, :vg, :domu, :mode
+  def initialize(name, vg, domu, mode='w')
+    @name, @vg, @domu, @mode = name, vg, domu, mode
   end
 
   def self.from_str(value)
     dom0, domu, mode = value.split(',')
-    new(dom0, domu, mode)
+    vg, name = dom0.split(/[\/:]/).slice(-2, 2)
+    new(name, vg, domu, mode)
   end
-
+  
+  def size
+    Xen::Command.lv_size(@vg, @name)
+  end
+  
   def to_str
-    "#{dom0},#{domu},#{mode}"
+    "phy:#{vg}/#{lv},#{domu},#{mode}"
   end 
 end
 

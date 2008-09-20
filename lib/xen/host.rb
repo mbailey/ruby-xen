@@ -6,4 +6,5 @@ class Xen::Host
       instance_variable_set("@#{i}", j)
     end
   end
+  
 end

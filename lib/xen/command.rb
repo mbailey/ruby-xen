@@ -7,6 +7,39 @@ class Xen::Command
   #   end
   # end
   
+  # Return the size of a logical volume in gigabytes
+  def self.lv_size(vg_name, lv_name)
+    cmd = "lvs --noheadings --nosuffix --options lv_size --units g #{vg_name}/#{lv_name}"
+    `#{cmd}`.strip
+  end
+  
+  # Return list of logical volumes
+  def self.lv_list(vg_name)
+    cmd = "lvs --noheadings --nosuffix --options vg_name,lv_name,lv_size --units g #{vg_name}"
+    raw = `#{cmd}`
+    raw.scan(/(\S+)\s+(\S+)\s+(\S+)/).collect{ |vg_name, lv_name, size| 
+      {
+      :vg => vg_name,
+      :name => lv_name,
+      :size => size
+      }
+    }
+  end
+  
+  def self.vg_list
+    cmd = "vgs --noheadings --units g --nosuffix --options vg_name,vg_size,vg_free,lv_count,max_lv"
+    raw = `#{cmd}`
+    raw.scan(/(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)/).collect{ |vg_name, vg_size, vg_free, lv_count, max_lv|
+      {
+      :name => vg_name,
+      :size => vg_size,
+      :free => vg_free,
+      :lv_count => lv_count,
+      :max_lv => max_lv 
+      }
+    }
+  end
+  
   def self.detailed_instance_list(name='')
     cmd = "xm list --long #{name}"
     raw_entries = `#{cmd}`.split(/\n\(domain/)
