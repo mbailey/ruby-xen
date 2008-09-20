@@ -1,17 +1,5 @@
 class Xen::Slice
-  attr_accessor :name, :image, :config
-
-  def initialize(name)
-    @name = name
-    @config = Xen::Config.find(name)
-    @instance = Xen::Instance.find(name)
-    @instance_cache_expires = Time.now + Xen::INSTANCE_OBJECT_LIFETIME
-    @image = Xen::Image.find(name)
-  end
-
-  def self.create(args)
-    args = hash.collect{|k,v| "#{k}=#{v}"}
-  end
+  attr_accessor :name, :image, :config, :backups
   
   def self.find(*args)
     options = args.extract_options!
@@ -27,14 +15,40 @@ class Xen::Slice
     self.find(:all, options)
   end
   
+  def initialize(*args)
+    options = args.extract_options! # remove trailing hash (not used)
+    @name = args.first
+    @config = options[:config]
+    @instance = options[:instance]
+    @instance_cache_expires = Time.now
+    @backups = Array(options[:backups])
+  end
+
+  def create_image(args)
+    args = hash.collect{|k,v| "#{k}=#{v}"}
+    Xen::Command.create_image
+  end
+  
   # Cache Xen instance info to reduce system calls to xm command.
+  # It still needs to be checked regularly as operations like shutdown
+  # and create can take a while.
   def instance
     if @instance_cache_expires > Time.now
       @instance
     else
       @instance_cache_expires = Time.now + Xen::INSTANCE_OBJECT_LIFETIME
-      @instance = Xen::Instance.find(@name)
+      @instance = Xen::Instance.find(@name) if @name
     end
+  end  
+
+  # XXX We're assuming other processes aren't going to edit configs
+  # This is reasonable in simple cases.
+  def config
+    @config ||= Xen::Config.find(name) if @name
+  end
+  
+  def backups
+    Xen::Backup.find(name)
   end
 
   def state
@@ -58,7 +72,9 @@ class Xen::Slice
   def config_newer_than_instance?
 	  instance && config.updated_at > instance.start_time 
 	end
-  
-
+	
+	def save
+	  @config.save
+  end
   
 end

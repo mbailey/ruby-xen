@@ -1,3 +1,28 @@
+module Xen
+  # General configuration for ruby-xen
+  
+  # Location of Xen config files
+  XEN_DOMU_CONFIG_DIR = '/etc/xen'
+  # XEN_DOMU_CONFIG_DIR = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '/spec/fixtures/xen_domu_configs'))
+  
+  # We don't want out library to hit Xen too often (premature optimization perhaps?)
+  # so we keep information about Xen instances in an object. Specify how long before
+  # the object expires.
+  INSTANCE_OBJECT_LIFETIME = 5 # seconds
+  
+  # General location for config file templates
+  TEMPLATE_DIR = File.expand_path(File.dirname(__FILE__) + '/../lib/templates')
+  
+  # Extension for Xen domU config files
+  CONFIG_FILE_EXTENSION = '.cfg'
+  
+  # Directory for backups of system images
+  BACKUP_DIR='/var/xen_images'
+  
+  # FIle extension for backups
+  BACKUP_FILE_EXT = '.tar'
+end
+
 class Array #:nodoc:
   # Extracts options from a set of arguments. Removes and returns the last
   # element in the array if it's a hash, otherwise returns a blank hash.
@@ -27,20 +52,6 @@ class Hash #:nodoc:
 end
 
 module Xen
-  # Location of Xen config files
-  XEN_DOMU_CONFIG_DIR = '/etc/xen'
-  # XEN_DOMU_CONFIG_DIR = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '/spec/fixtures/xen_domu_configs'))
-  
-  # We don't want out library to hit Xen too often (premature optimization perhaps?)
-  # so we keep information about Xen instances in an object. Specify how long before
-  # the object expires.
-  INSTANCE_OBJECT_LIFETIME = 5
-  
-  TEMPLATE_DIR = File.expand_path(File.dirname(__FILE__) + '/../lib/templates')
-  
-  # Extension for Xen domU config files
-  CONFIG_FILE_EXTENSION = '.cfg'
-  
   # DRY up some classes (children of Slice) with some module funkiness.
   module Parentable
     # Returns the parent Slice object (d) for a sub-object. 

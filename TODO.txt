@@ -1,5 +1,15 @@
+show/edit xen-tools defaults (/etc/xen-tools/xen-tools.conf)
+
 slice.create
 slice.destroy
+
+create config dir if missing
+
+some current attr_accessors could be simple attr_readers
+
+validations
+
+dom0 is not really a slice
 
 Add specs
 

@@ -1,10 +1,9 @@
 require 'deprec'
 
-role :dev, 'bb', 'localhost'
+role :dev, 'localhost'
 
 set :application, 'ruby-xen'
 set :version, '0.0.2'
-
 
 task :bi do
   build
