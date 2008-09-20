@@ -1,10 +1,10 @@
 Gem::Specification.new do |s|
   s.name     = "ruby-xen"
-  s.version  = "0.0.2"
-  s.date     = "2008-09-11"
+  s.version  = "0.0.3"
+  s.date     = "2008-09-21"
   s.summary  = "Ruby library for managing Xen virtual hosts"
   s.email    = "mike@bailey.net.au"
-  s.homepage = "http://github.com/schacon/grit"
+  s.homepage = "http://github.com/mbailey/ruby-xen"
   s.description = "ruby-xen allows you to manage Xen virtual servers via Ruby. It currently 
   wraps the command line tools provided by Xen (xm) as well as Steve Kemps 
   excellent Xen-tools (http://www.xen-tools.org/software/xen-tools/)."
@@ -21,10 +21,10 @@ Gem::Specification.new do |s|
     lib/xen/backup.rb
     lib/xen/command.rb
     lib/xen/config.rb
-    lib/xen/slice.rb
     lib/xen/host.rb
     lib/xen/image.rb
     lib/xen/instance.rb
+    lib/xen/slice.rb
     lib/templates/domu.cfg.erb
   )
   s.require_paths = ['lib']

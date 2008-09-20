@@ -1,3 +1,8 @@
+=== 0.0.3 / 2008-09-21
+
+* fleshed out :backup class
+* Xen::Commands are now easily called by backgroundjob (bj)
+
 === 0.0.2 / 2008-09-11
 
 * Broke out classes into separate files
