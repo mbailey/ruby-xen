@@ -54,19 +54,22 @@ class Xen::Config
 	end
 	
 	# Set to true|false to enable|disable autostart of slice
-	def auto=(value)
+	def set_auto(value)
     filename = File.basename(config_file)
     if value == true
-      File.symlink("../#{filename}", auto_file)
+      File.symlink("../#{filename}", auto_file) unless auto
     else
-      File.unlink(auto_file)
+      File.unlink(auto_file) if auto
     end
+    auto == value # return true if final state is as requested
   end
   
   # Returns true|false depending on whether slice is set to start automatically
   def auto
     File.symlink?(auto_file) && File.expand_path(File.readlink(auto_file), File.dirname(auto_file)) == config_file
   end
+  
+  alias auto? auto
   
   def self.create_from_config_file(config)
     name, kernel, ramdisk, memory, root, disk, vif, on_poweroff, on_reboot, on_crash, extra = nil
