@@ -7,6 +7,13 @@ class Xen::Command
   #   end
   # end
   
+  # Create a tar archive of slice disk image
+  def self.backup_slice(name, version, blocking=false)
+    detach = blocking ? '&' : ''
+    cmd = "/usr/bin/xen-archive-image #{name} #{version} #{detach}"
+    system(cmd)
+  end
+  
   # Return the size of a logical volume in gigabytes
   def self.lv_size(vg_name, lv_name)
     cmd = "lvs --noheadings --nosuffix --options lv_size --units g #{vg_name}/#{lv_name}"

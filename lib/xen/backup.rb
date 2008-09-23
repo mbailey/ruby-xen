@@ -6,8 +6,9 @@ class Xen::Backup
   def self.create(*args)
     options = args.extract_options!
     name = args.first
-    version = options[:version] || generate_version
-    Xen::Command.backup_slice(name, version)
+    version = options[:version] || Time.now.strftime('%Y%m%d')
+    
+    Xen::Command.backup_slice(name, version, false)
     new(name, version)
   end
       

@@ -50,6 +50,10 @@ class Xen::Slice
   def backups
     Xen::Backup.find(name)
   end
+  
+  def create_backup(version=nil)
+    Xen::Backup.create(name, version)
+  end
 
   def state
     self.instance ? :running : :stopped

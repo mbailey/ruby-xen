@@ -1,6 +1,4 @@
-= ruby-xen
-
-# Warning! Not ready yet - project started Sep 2008
+= ruby-xen (born sep 2008 - still immature!)
 
 http://github.com/mbailey/ruby-xen
 
