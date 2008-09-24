@@ -73,7 +73,7 @@ end
 
 require "#{File.dirname(__FILE__)}/xen/backup"
 require "#{File.dirname(__FILE__)}/xen/command"
-require "#{File.dirname(__FILE__)}/xen/config"
+require "#{File.dirname(__FILE__)}/xen/config_file"
 require "#{File.dirname(__FILE__)}/xen/slice"
 require "#{File.dirname(__FILE__)}/xen/host"
 require "#{File.dirname(__FILE__)}/xen/image"

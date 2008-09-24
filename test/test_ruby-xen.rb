@@ -1,3 +1,3 @@
 require '../lib/ruby-xen'
-c = Xen::Config.new
+c = Xen::ConfigFile.new
 c.save

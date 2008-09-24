@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
     test/test_ruby-xen.rb
     lib/xen/backup.rb
     lib/xen/command.rb
-    lib/xen/config.rb
+    lib/xen/config_file.rb
     lib/xen/host.rb
     lib/xen/image.rb
     lib/xen/instance.rb
