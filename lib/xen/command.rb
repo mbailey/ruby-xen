@@ -68,6 +68,8 @@ module Xen
     # Xen::Command.create_image('memory=512', :size => '10Gb')
     # => "xm-create-image memory=512 size=10Gb"
     #
+    # XXX call with a hash by default
+    #
     def self.create_image(*args)
       options = args.extract_options!
       cmd = "xm-create-image #{args.concat(options.to_args).join(' ')}"

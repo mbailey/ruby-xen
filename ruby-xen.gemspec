@@ -25,6 +25,7 @@ Gem::Specification.new do |s|
     lib/xen/instance.rb
     lib/xen/slice.rb
     lib/templates/domu.cfg.erb
+    lib/templates/xen-tools.conf.erb
   )
   s.require_paths = ['lib']
   # s.test_files = ["test/test_actor.rb"]

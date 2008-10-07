@@ -21,6 +21,9 @@ module Xen
   
   # FIle extension for backups
   BACKUP_FILE_EXT = '.tar'
+  
+  TEMPLATES_BASE = File.join(File.dirname(__FILE__), 'templates')
+  
 end
 
 class Array #:nodoc:

@@ -13,3 +13,4 @@ lib/xen/slice.rb
 lib/xen/host.rb
 lib/xen/instance.rb
 lib/templates/domu.cfg.erb
+lib/templates/xen-tools.conf.erb

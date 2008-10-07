@@ -95,8 +95,10 @@ module Xen
   class XenToolsConf
 
     # XXX underscorize :install-method, install-source, copy_cmd, tar-cmd
-    attr_accessor :dir, :lvm, :install_method, :install_source, :copy_cmd,  
-                  :tar_cmd, :size, :memory, :swap, :noswap, :fs, :dist, :gateway,       
+    attr_accessor :dir, :lvm, :install__method, :install__source, :copy_cmd,  
+                  :tar_cmd, :debootstrap__cmd, :size, :memory, :swap, :noswap,
+                  :fs,    
+                  :dist, :image, :gateway,       
                   :netmask, :broadcast, :dhcp, :cache, :passwd, :accounts, 
                   :kernel, :initrd, :mirror, :ext3_options, :ext2_options, 
                   :xfs_options, :reiser_options, :boot, :serial_device, 
@@ -105,9 +107,10 @@ module Xen
     def initialize(*args)
     end
     
-    def self.load(file=Xen::XEN_TOOLS_CONFIG_FILE)
+    def self.find(file=nil)
+      file ||= Xen::XEN_TOOLS_CONFIG_FILE
       xtc = new # Create a new XenToolsConf object
-      xtc.load_from_config_file(File.readlines(Xen::XEN_TOOLS_CONFIG_FILE))
+      xtc.load_from_config_file(File.readlines(file))
       xtc
     end
     
@@ -128,6 +131,19 @@ module Xen
         m[variable_name.sub('@','')] = instance_variable_get(variable_name); m 
       }
     end
+    
+    def to_file
+      template = ERB.new(IO.read(File.join(TEMPLATES_BASE, 'xen-tools.conf.erb')))
+      template.result(binding)
+    end
+    
+    def save(filename=nil)
+      filename ||= Xen::XEN_TOOLS_CONFIG_FILE
+      File.open(filename, 'w') do |f|
+        f.write(to_file)
+      end
+      # XXX check for errors
+    end
 
   end
 end
@@ -135,10 +151,10 @@ end
 
 class String
   def underscorize
-    self.tr("-", "__")
+    self.sub("-", "__")
   end
   def ununderscorize
-    self.tr("__", "-")
+    self.sub("__", "-")
   end
 end
 
