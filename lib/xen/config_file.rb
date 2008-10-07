@@ -1,7 +1,7 @@
 require 'erb'
 
 module Xen
-  class Config
+  class ConfigFile
     # The config files for each Xen domU
     include Xen::Parentable
     attr_accessor :name, :kernel, :ramdisk, :memory, :root, :vbds, :vifs, :on_poweroff, :on_reboot, :on_crash, :extra
@@ -42,7 +42,7 @@ module Xen
       create_from_config_file(File.read(filename)) if File.exists?(filename)
     end
     
-    def config_file
+    def filename
       "#{Xen::XEN_DOMU_CONFIG_DIR}/#{name}#{Xen::CONFIG_FILE_EXTENSION}"
     end
   
@@ -51,14 +51,13 @@ module Xen
     end
   
     def updated_at
-  	  File.mtime(config_file)
+  	  File.mtime(filename)
   	end
 	
   	# Set to true|false to enable|disable autostart of slice
   	def set_auto(value)
-      filename = File.basename(config_file)
       if value == true
-        File.symlink("../#{filename}", auto_file) unless auto
+        File.symlink("../#{File.basename(filename)}", auto_file) unless auto
       else
         File.unlink(auto_file) if auto
       end
@@ -67,7 +66,7 @@ module Xen
   
     # Returns true|false depending on whether slice is set to start automatically
     def auto
-      File.symlink?(auto_file) && File.expand_path(File.readlink(auto_file), File.dirname(auto_file)) == config_file
+      File.symlink?(auto_file) && File.expand_path(File.readlink(auto_file), File.dirname(auto_file)) == filename
     end
   
     alias auto? auto

@@ -22,7 +22,6 @@ Gem::Specification.new do |s|
     lib/xen/command.rb
     lib/xen/config_file.rb
     lib/xen/host.rb
-    lib/xen/image.rb
     lib/xen/instance.rb
     lib/xen/slice.rb
     lib/templates/domu.cfg.erb
