@@ -23,7 +23,9 @@ Gem::Specification.new do |s|
     lib/xen/config_file.rb
     lib/xen/host.rb
     lib/xen/instance.rb
+    lib/xen/lvm.rb
     lib/xen/slice.rb
+    lib/xen/xen_tools_conf.rb
     lib/templates/domu.cfg.erb
     lib/templates/xen-tools.conf.erb
   )
@@ -31,5 +33,6 @@ Gem::Specification.new do |s|
   # s.test_files = ["test/test_actor.rb"]
   s.rdoc_options = ["--main", "README.rdoc"]
   s.extra_rdoc_files = ["History.txt", "Manifest.txt", "README.rdoc"]
-  # s.add_dependency("diff-lcs", ["> 0.0.0"])
+  s.add_dependency("activesupport")
+  s.add_dependency("open4")
 end
