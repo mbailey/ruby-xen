@@ -5,10 +5,10 @@ module Xen
     def self.find(*args)
       options = args.extract_options!
       case args.first
-        when :all       then Xen::ConfigFile.find(:all, options).collect { |config_file| new config_file.name }
-        when :running   then Xen::Instance.find(:all, options).collect { |instance| new instance.name }
+        when :all       then Xen::ConfigFile.find(:all, options).collect { |config_file| new :name => config_file.name }
+        when :running   then Xen::Instance.find(:all, options).collect { |instance| new :name => instance.name }
         # Retrieve a Slice by name
-        else            Xen::ConfigFile.find_by_name(args.first) && new(args.first)
+        else            Xen::ConfigFile.find_by_name(args.first) && new(:name => args.first)
       end
     end
   
@@ -17,17 +17,48 @@ module Xen
     end
   
     def initialize(*args)
-      options = args.extract_options! # remove trailing hash (not used)
-      @name = args.first
+      options = args.extract_options! 
+      @name = options[:name]
       @config_file = options[:config_file]
       @instance = options[:instance]
       @instance_cache_expires = Time.now
       @backups = Array(options[:backups])
     end
 
-    def create_image(args)
-      args = hash.collect{|k,v| "#{k}=#{v}"}
-      Xen::Command.create_image(*args)
+    def create_image(*args)
+      options = args.extract_options!.stringify_keys
+      
+      # Load default values for options that have not been set
+      options.reverse_merge! Xen::XenToolsConf.find.to_hash 
+      
+      # Set some derived options
+      options.reverse_merge! 'hostname' => name # Name host after this slice
+      options['dhcp'] = true unless options['ip']
+      options['swap'] ||= options['memory'].to_i * 2
+      if options['root_pass']
+        options['role'] = 'passwd'
+        options['role-args'] = options['root_pass']
+      end
+      if options['tarball']
+        options['install-method'] = 'tar'
+        options['install-source'] = options['tarball']
+        options.delete('dist')
+      end
+      
+      args = %w(hostname dist memory size
+                force boot
+                role role-args roledir
+                dir lvm mirror 
+                ip mac netmask broadcast gateway dhcp
+                swap
+                accounts admins cache config fs image image-dev initrd 
+                keep kernel modules output install hooks partitions 
+                passwd tar-cmd extension swap-dev noswap ide arch 
+                install-method install-source template evms)
+      # Remove options that are not in allowed argument list
+      options.keys.each { |key| options.delete(key) unless args.include?(key) }
+      
+      Xen::Command.create_image(options)
     end
   
     # Cache Xen instance info to reduce system calls to xm command.
@@ -52,8 +83,8 @@ module Xen
       Xen::Backup.find(name)
     end
   
-    def create_backup(version=nil)
-      Xen::Backup.create(name, version)
+    def create_backup(options = {})
+      Xen::Backup.create(name, :options)
     end
 
     def state
@@ -81,80 +112,18 @@ module Xen
   	def save
   	  @config_file.save
     end
+    
+    def root_disk
+      config_file.vbds.detect { |vbd| vbd.name == "#{name}-disk" } unless config_file.nil?
+    end
+    
+    # Primary IP
+    def ip
+      config_file.vifs[0].ip
+    end
   
   end
 end
 
-module Xen
-  
-  # puts Xen::XenToolsConf.load.to_hash.inspect
-  
-  # XXX move into ruby-xen.rb
-  XEN_TOOLS_CONFIG_FILE = '/etc/xen-tools/xen-tools.conf'
-  
-  class XenToolsConf
 
-    # XXX underscorize :install-method, install-source, copy_cmd, tar-cmd
-    attr_accessor :dir, :lvm, :install__method, :install__source, :copy_cmd,  
-                  :tar_cmd, :debootstrap__cmd, :size, :memory, :swap, :noswap,
-                  :fs,    
-                  :dist, :image, :gateway,       
-                  :netmask, :broadcast, :dhcp, :cache, :passwd, :accounts, 
-                  :kernel, :initrd, :mirror, :ext3_options, :ext2_options, 
-                  :xfs_options, :reiser_options, :boot, :serial_device, 
-                  :disk_device, :output, :extension
-                
-    def initialize(*args)
-    end
-    
-    def self.find(file=nil)
-      file ||= Xen::XEN_TOOLS_CONFIG_FILE
-      xtc = new # Create a new XenToolsConf object
-      xtc.load_from_config_file(File.readlines(file))
-      xtc
-    end
-    
-    def load_from_config_file(file_contents)
-      file_contents.reject! { |line| line.match /^\s*#/ } # Ignore commented out lines
-      file_contents.grep(/(.*) = (.*)/).each { |setting|
-        setting.scan(/\s*(.+?)\s*=\s*([^#]+)/).each { |match|
-          key, val = match
-          key.strip!
-          val.strip!          
-          instance_variable_set("@#{key.underscorize}", val) 
-        }
-      }
-    end
-    
-    def to_hash
-      self.instance_variables.inject({}) { |m, variable_name| 
-        m[variable_name.sub('@','')] = instance_variable_get(variable_name); m 
-      }
-    end
-    
-    def to_file
-      template = ERB.new(IO.read(File.join(TEMPLATES_BASE, 'xen-tools.conf.erb')))
-      template.result(binding)
-    end
-    
-    def save(filename=nil)
-      filename ||= Xen::XEN_TOOLS_CONFIG_FILE
-      File.open(filename, 'w') do |f|
-        f.write(to_file)
-      end
-      # XXX check for errors
-    end
-
-  end
-end
-
-
-class String
-  def underscorize
-    self.sub("-", "__")
-  end
-  def ununderscorize
-    self.sub("__", "-")
-  end
-end
 

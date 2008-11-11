@@ -19,10 +19,12 @@ module Xen
   # Directory for backups of system images
   BACKUP_DIR='/var/xen_images'
   
-  # FIle extension for backups
+  # File extension for backups
   BACKUP_FILE_EXT = '.tar'
   
   TEMPLATES_BASE = File.join(File.dirname(__FILE__), 'templates')
+  
+  XEN_TOOLS_CONFIG_FILE = '/etc/xen-tools/xen-tools.conf'
   
 end
 
@@ -44,13 +46,13 @@ end
 class Hash #:nodoc:
   # Converts a Hash into an array of key=val formatted strings
   #
-  # puts { :nics => 2, :vcpus => 1, :memory => 64 }.to_args 
+  # puts { :nics => 2, :vcpus => 1, :memory => 64, :dhcp => true }.to_args 
   #
   # produces:
   #
-  # ["memory=64", "nics=2", "vcpus=1"]
+  # ["--memory=64", "--nics=2", "--vcpus=1", "--dhcp"]
   def to_args
-    collect{|k,v| "#{k}=#{v}"}
+    collect{|k,v| (v.to_s == 'true') ? "--#{k.to_s}" : "--#{k.to_s}=#{v}"}
   end
 end
 
@@ -66,7 +68,7 @@ module Xen
     #   i.object_id == s.instance.object_id # true
     #
     def slice
-      d = Xen::Slice.new(name)
+      d = Xen::Slice.new(:name => name)
       # Insert the current object into the newly created Slice's attributes
       d.instance_variable_set("@#{self.class.to_s.sub('Xen::','').downcase}", self)
       d
@@ -74,10 +76,28 @@ module Xen
   end
 end
 
+class String
+  def underscorize
+    self.sub("-", "__")
+  end
+  def ununderscorize
+    self.sub("__", "-")
+  end
+end
+
+# We want to use Rails's stringify_keys
+require "active_support/core_ext/hash/keys"
+require "active_support/core_ext/hash/reverse_merge"
+class Hash #:nodoc:
+  include ActiveSupport::CoreExtensions::Hash::Keys
+  include ActiveSupport::CoreExtensions::Hash::ReverseMerge
+end
+
 require "#{File.dirname(__FILE__)}/xen/backup"
 require "#{File.dirname(__FILE__)}/xen/command"
 require "#{File.dirname(__FILE__)}/xen/config_file"
-require "#{File.dirname(__FILE__)}/xen/slice"
 require "#{File.dirname(__FILE__)}/xen/host"
-require "#{File.dirname(__FILE__)}/xen/image"
 require "#{File.dirname(__FILE__)}/xen/instance"
+require "#{File.dirname(__FILE__)}/xen/slice"
+require "#{File.dirname(__FILE__)}/xen/xen_tools_conf"
+require "#{File.dirname(__FILE__)}/xen/lvm"
