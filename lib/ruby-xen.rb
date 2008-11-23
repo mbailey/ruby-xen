@@ -59,6 +59,30 @@ class Hash #:nodoc:
   end
 end
 
+class String
+  
+  # Convert string to megabytes
+  def to_megabytes
+    gigabytes = /(gb|gig|gigabytes?)/i
+    megabytes = /(mb|meg|megabytes?)/i
+    kilobytes = /(kb|kilobytes?)/i
+    bytes = /bytes?/i
+    
+    if index(gigabytes)
+      return sub(gigabytes,'').to_i * 1024
+    elsif index(megabytes)
+      return sub(megabytes,'').to_i
+    elsif index(kilobytes)
+      return sub(kilobytes,'').to_i / 1024
+    elsif index(bytes)
+      return sub(bytes,'').to_i / (1024*1024)
+    else
+      return self.to_i
+    end
+  end
+  
+end
+
 module Xen
   # DRY up some classes (children of Slice) with some module funkiness.
   module Parentable
