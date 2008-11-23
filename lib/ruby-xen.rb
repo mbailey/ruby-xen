@@ -1,3 +1,6 @@
+class ValidationFailed < StandardError; end
+
+
 module Xen
   # General configuration for ruby-xen
   

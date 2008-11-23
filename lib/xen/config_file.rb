@@ -8,10 +8,10 @@ module Xen
 
     def initialize(*args)
       options = args.extract_options!
-      @name = args.first
+      @name = options[:name]
       @kernel = options[:kernel]
       @ramdisk = options[:ramdisk]
-      @memory = options[:memory]
+      @memory = options[:memory].to_i
       @root = options[:root]
       @vbds = options[:vbds]
       @vifs = options[:vifs]
@@ -37,7 +37,7 @@ module Xen
     end    
 
     def self.find_by_name(name)
-      return new('Domain-0') if name == 'Domain-0' 
+      return new(:name => 'Domain-0') if name == 'Domain-0' 
       filename = "#{Xen::XEN_DOMU_CONFIG_DIR}/#{name}#{Xen::CONFIG_FILE_EXTENSION}"
       create_from_config_file(File.read(filename)) if File.exists?(filename)
     end
@@ -76,12 +76,12 @@ module Xen
       eval(config)
       vifs = Array(vif).collect { |v| Xen::Vif.from_str(v) }
       vbds = Array(disk).collect { |d| Xen::Vbd.from_str(d) }
-      new(name, :disk => disk, :kernel => kernel, :ramdisk => ramdisk, :memory => memory, :root => root, :vbds => vbds, :vifs => vifs, :on_poweroff => on_poweroff, :on_reboot => on_reboot, :on_crash => on_crash, :extra => extra)
+      new(:name => name, :disk => disk, :kernel => kernel, :ramdisk => ramdisk, :memory => memory, :root => root, :vbds => vbds, :vifs => vifs, :on_poweroff => on_poweroff, :on_reboot => on_reboot, :on_crash => on_crash, :extra => extra)
     end
-  
+    
     def save
       template = ERB.new IO.read(Xen::TEMPLATE_DIR + '/domu.cfg.erb')
-      File.open(config_file, 'w'){ |f| f.write template.result(binding) }
+      File.open(filename, 'w'){ |f| f.write template.result(binding) }
     end
   
   end
@@ -93,12 +93,17 @@ module Xen
   #
   class Xen::Vif
     attr_accessor :ip, :mac, :bridge, :vifname
+    
     def initialize(*args)
       options = args.extract_options!
-      @ip = options[:ip] 
-      @mac = options[:mac]
-      @bridge = options[:bridge]
-      @vifname = options[:vifname]
+      
+      # Validations - move them out into a validate function
+      raise(ValidationFailed, 'message') if options[:vifname] == 'foos' 
+      
+      @ip = options[:ip].to_s.gsub /['"]/, ''
+      @mac = options[:mac].to_s.gsub /['"]/, ''
+      @bridge = options[:bridge].to_s.gsub /['"]/, ''
+      @vifname = options[:vifname].to_s.gsub /['"]/, ''
     end
 
     def self.from_str(value)
@@ -126,23 +131,28 @@ module Xen
   #                   'phy:xendisks/example-swap,sda2,w',
   #                   'phy:assets/example-assets,sdb1,w' ]
   class Xen::Vbd
-    attr_accessor :name, :vg, :domu, :mode
-    def initialize(name, vg, domu, mode='w')
-      @name, @vg, @domu, @mode = name, vg, domu, mode
+    attr_accessor :name, :volume_group, :domu, :mode
+    def initialize(name, volume_group, domu, mode='w')
+      @name, @volume_group, @domu, @mode = name, volume_group, domu, mode
     end
 
     def self.from_str(value)
       dom0, domu, mode = value.split(',')
-      vg, name = dom0.split(/[\/:]/).slice(-2, 2)
-      new(name, vg, domu, mode)
+      volume_group, name = dom0.split(/[\/:]/).slice(-2, 2)
+      new(name, volume_group, domu, mode)
     end
   
     def size
-      Xen::Command.lv_size(@vg, @name)
+      Xen::Command.lv_size(@volume_group, @name)
     end
-  
+    
+    # XXX Not needed?
+    # def path
+    #   "/dev/#{volume_group}/#{name}"
+    # end
+    
     def to_str
-      "phy:#{vg}/#{name},#{domu},#{mode}"
+      "phy:#{volume_group}/#{name},#{domu},#{mode}"
     end 
   end
   

@@ -3,8 +3,8 @@ module Xen
     include Xen::Parentable
     attr_reader :name, :domid, :memory, :cpu_time, :vcpus, :state, :start_time
 
-    def initialize(name, options={})
-      @name       = name
+    def initialize(options={})
+      @name       = options[:name]
       @domid      = options[:domid]
       @memory     = options[:memory]
       @cpu_time   = options[:cpu_time]
@@ -23,13 +23,13 @@ module Xen
 
     def self.all
       Xen::Command.detailed_instance_list.collect do |instance|
-        new(name, instance)
+        new(instance)
       end
     end
 
     def self.find_by_name(name)
       Xen::Command.detailed_instance_list(name).each do |instance|
-        return new(name, instance)
+        return new(instance)
       end
       return false
     end
