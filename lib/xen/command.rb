@@ -1,5 +1,8 @@
 module Xen
   class Command
+    
+    class ExternalFailure < RuntimeError; end
+        
     # def self.xm_list
     #   raw = `xm list`.scan(/(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)/)
     #   headers = raw.delete_at(0)
@@ -7,12 +10,22 @@ module Xen
     #     headers.enum_with_index.inject({}) { |m, (head, i)| m[head] = row[i]; m  }
     #   end
     # end
-  
-    # Create a tar archive of slice disk image
-    def self.backup_slice(name, version, blocking=false)
-      detach = blocking ? '&' : ''
-      cmd = "/usr/bin/xen-archive-image #{name} #{version} #{detach}"
-      system(cmd)
+    
+    def self.run(cmd)
+      output = []
+      error = nil
+      stat = Open4.popen4(cmd) do |pid, stdin, stdout, stderr|
+        while line = stdout.gets
+          output << line.strip
+        end
+        error = stderr.read.strip
+      end
+      # if stat.exited? # Is this needed?
+        if stat.exitstatus > 0
+          raise ExternalFailure, "Fatal error, `#{cmd}` returned #{stat.exitstatus} with '#{error}'"
+        end
+      # end
+      return output
     end
   
     # Return the size of a logical volume in gigabytes
@@ -72,12 +85,16 @@ module Xen
     #
     def self.create_image(*args)
       options = args.extract_options!
-      cmd = "xm-create-image #{args.concat(options.to_args).join(' ')}"
-      `cmd`
+      cmd = "xen-create-image #{args.concat(options.to_args).join(' ')}"
+      puts 
+      puts "Running the command:"
+      puts cmd
+      puts
+      system(cmd)
     end
     
     def self.xm_info
-      result = `xm info`
+      result = `/usr/sbin/xm info`
       result.scan(/(\S+)\s*:\s*([^\n]+)/).inject({}){ |m, (i,j)| m[i.to_sym] = j; m }
     end
   end

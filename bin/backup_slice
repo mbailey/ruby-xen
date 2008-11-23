@@ -1,0 +1,38 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'ruby-xen'
+require 'optparse'
+require 'ostruct'
+require 'pp'
+
+# Parse options
+options = OpenStruct.new
+OptionParser.new do |opts|
+  opts.banner = "Usage: #{File.basename($0)} [slice]"
+  
+  opts.on("-h", "--help", "Displays this help info") do
+    puts opts
+    exit 0
+  end
+
+  begin
+    opts.parse!(ARGV)
+  rescue OptionParser::ParseError => e
+    warn e.message
+    puts opts
+    exit 1
+  end
+end
+
+# Display error on incorrect number of arguments
+if ARGV.empty?
+  abort "Please specify the slice to backup, e.g. `#{File.basename($0)} web01'"
+elsif ARGV.length > 1
+  abort "Too many arguments; please specify only the directory to capify."
+end
+
+
+slice_name = ARGV.shift
+slice = Xen::Slice.find(slice_name)
+slice.backup
