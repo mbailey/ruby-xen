@@ -39,7 +39,7 @@ module Xen
         options['role'] = 'passwd'
         options['role-args'] = options['root_pass']
       end
-      if options['tarball']
+      unless [nil,''].include?(options['tarball'])
         options['install-method'] = 'tar'
         options['install-source'] = options['tarball']
         options.delete('dist')
