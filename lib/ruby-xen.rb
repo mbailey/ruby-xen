@@ -49,14 +49,18 @@ end
 class Hash #:nodoc:
   # Converts a Hash into an array of key=val formatted strings
   #
-  # puts { :nics => 2, :vcpus => 1, :memory => 64, :dhcp => true }.to_args 
+  # puts { :nics => 2, :name => 'test', :dhcp => true, :passwd => false }.to_args 
   #
   # produces:
   #
-  # ["--memory=64", "--nics=2", "--vcpus=1", "--dhcp"]
-  def to_args
-    collect{|k,v| (v.to_s == 'true') ? "--#{k.to_s}" : "--#{k.to_s}=#{v}"}
-  end
+  # ["--nics=2", "--name=test", "--dhcp"]
+  collect { |k,v| 
+		case v.to_s 
+		when 'true' then "--#{k.to_s}" 
+		when 'false' then ''
+		else "--#{k.to_s}=#{v}"
+	  end
+	}
 end
 
 class String
