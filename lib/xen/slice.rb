@@ -91,6 +91,10 @@ module Xen
       self.instance ? :running : :stopped
     end
     
+    def first_ip
+      config_file.vifs.first.ip if config_file and config_file.vifs
+    end
+    
     def running?
       self.instance ? true : false
     end
