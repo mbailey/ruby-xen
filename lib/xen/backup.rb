@@ -13,16 +13,16 @@ module Xen
       version = options[:version] || Time.now.strftime('%Y%m%d')
       backup_dir = options[:backup_dir] || Xen::BACKUP_DIR
       backup_file_ext = options[:backup_file_ext] || Xen::BACKUP_FILE_EXT
-      archive_name="#{name}-#{version}.#{backup_file_ext}"
+      archive_name="#{name}-#{version}#{backup_file_ext}"
             
       slice = Xen::Slice.find(name) # XXX test for failure
-      slice.stop
+      slice.stop if slice.running?
       sleep 10
 
       temp_mount = `mktemp -d -p /mnt #{name}-XXXXX`.chomp # XXX test for failure
       `mount #{slice.root_disk.path} #{temp_mount}` # XXX test for failure
 
-      # Creating archive at $ARCHIVE_DIR/$ARCHIVE_NAME ...
+      # Creating archive at backup_dir/archive_name ...
       `tar --create --exclude=/proc --exclude=/etc/udev/rules.d/70-persistent-net.rules --directory #{temp_mount} --file #{backup_dir}/#{archive_name} .`
       # XXX test for failure
       
