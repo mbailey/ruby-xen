@@ -8,8 +8,8 @@ module Xen
       options = args.extract_options!
       name = args.first
       
-      options = {}
-      name = 'foo' # XXX replace with real value
+      # options = {}
+      # name = 'foo' # XXX replace with real value
       version = options[:version] || Time.now.strftime('%Y%m%d')
       backup_dir = options[:backup_dir] || Xen::BACKUP_DIR
       backup_file_ext = options[:backup_file_ext] || Xen::BACKUP_FILE_EXT
