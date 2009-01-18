@@ -20,7 +20,7 @@ module Xen
   CONFIG_FILE_EXTENSION = '.cfg'
   
   # Directory for backups of system images
-  BACKUP_DIR='/var/xen_images'
+  BACKUP_DIR='/var/backups/xen'
   
   # File extension for backups
   BACKUP_FILE_EXT = '.tar'
