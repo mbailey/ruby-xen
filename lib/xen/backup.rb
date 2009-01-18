@@ -32,7 +32,7 @@ module Xen
 
       # Creating symlink from new backup to filename without version number
       last_backup = "#{backup_dir}/#{name}.#{backup_file_ext}"
-      File.delete(last_backup) if File.symlink(last_backup)
+      File.delete(last_backup) if File.symlink?(last_backup)
       `ln -sf #{backup_dir}/#{archive_name} #{last_backup}`
       
       slice.start
