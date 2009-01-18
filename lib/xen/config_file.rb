@@ -146,10 +146,9 @@ module Xen
       Xen::Command.lv_size(@volume_group, @name)
     end
     
-    # XXX Not needed?
-    # def path
-    #   "/dev/#{volume_group}/#{name}"
-    # end
+    def path
+      "/dev/#{volume_group}/#{name}"
+    end
     
     def to_str
       "phy:#{volume_group}/#{name},#{domu},#{mode}"
