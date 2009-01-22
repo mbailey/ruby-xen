@@ -16,14 +16,19 @@ module Xen
       archive_name="#{name}-#{version}#{backup_file_ext}"
             
       slice = Xen::Slice.find(name) # XXX test for failure
-      slice.stop if slice.running?
-      sleep 10
+      if slice.running?
+        slice.stop
+        sleep 10
+        restart_slice = true
+      end
 
       temp_mount = `mktemp -d -p /mnt #{name}-XXXXX`.chomp # XXX test for failure
       `mount #{slice.root_disk.path} #{temp_mount}` # XXX test for failure
 
       # Creating archive at backup_dir/archive_name ...
-      `tar --create --exclude=/proc --exclude=/etc/udev/rules.d/70-persistent-net.rules --directory #{temp_mount} --file #{backup_dir}/#{archive_name} .`
+      excludes_file = File.join(File.dirname(__FILE__),'..','templates','exclude_from_backups')
+      `tar --create --exclude-from=#{excludes_file} --directory #{temp_mount} --file #{backup_dir}/#{archive_name} .`
+
       # XXX test for failure
       
       # Unmounting image
@@ -35,7 +40,7 @@ module Xen
       File.delete(last_backup) if File.symlink?(last_backup)
       `ln -sf #{backup_dir}/#{archive_name} #{last_backup}`
       
-      slice.start
+      slice.start if restart_slice == true
       
       new(:name => name, :version => version)
     end

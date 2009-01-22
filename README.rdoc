@@ -22,13 +22,19 @@ ruby-xen can also be used by ruby code or from irb.
 
   require 'rubygems'
   require 'ruby-xen'
+  include Xen
 
-  slice = Xen::Slice.find(:example)
+  slice = Slice.find :example 
   slice.running? # true
   slice.stop
   slice.running? # false
   slice.start
   slice.running? # true
+  
+  slice.backups   # => [#<Xen::Backup:0xb7a96520 @name=:example, @version="20090118">]
+  s.create_backup # => #<Xen::Backup:0xb7a922a4 @name=:example, @version="20090123">
+
+
 
 == REQUIREMENTS:
 

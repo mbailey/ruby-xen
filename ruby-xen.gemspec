@@ -27,6 +27,7 @@ Gem::Specification.new do |s|
     lib/xen/slice.rb
     lib/xen/xen_tools_conf.rb
     lib/templates/domu.cfg.erb
+    lib/templates/exclude_from_backups
     lib/templates/xen-tools.conf.erb
   )
   s.require_paths = ['lib']
