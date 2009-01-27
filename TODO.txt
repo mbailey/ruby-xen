@@ -1,3 +1,5 @@
+* don't create backup if disk space low
+
 irb(main):004:0> s.running?
 Error: Domain 'gutsy' does not exist.
 => false
