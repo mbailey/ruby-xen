@@ -35,4 +35,4 @@ end
 
 slice_name = ARGV.shift
 slice = Xen::Slice.find(slice_name)
-slice.backup
+slice.create_backup

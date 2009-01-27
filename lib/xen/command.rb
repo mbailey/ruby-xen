@@ -93,6 +93,12 @@ module Xen
       system(cmd)
     end
     
+    def self.create_backup(*args)
+      name = args.shift
+      slice = Xen::Slice.find(name)
+      slice.create_backup
+    end
+    
     def self.xm_info
       result = `/usr/sbin/xm info`
       result.scan(/(\S+)\s*:\s*([^\n]+)/).inject({}){ |m, (i,j)| m[i.to_sym] = j; m }
