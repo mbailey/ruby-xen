@@ -113,7 +113,7 @@ module Xen
 
     def to_str
       %w(ip mac bridge vifname).collect { |key| 
-        "#{key}=#{instance_variable_get('@' + key)}" if !instance_variable_get('@'+key).nil?
+        "#{key}=#{instance_variable_get('@' + key)}" unless instance_variable_get('@'+key) == ''
       }.compact.join(',')
     end 
   end
