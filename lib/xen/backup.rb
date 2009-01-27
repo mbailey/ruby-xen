@@ -25,7 +25,7 @@ module Xen
       temp_mount = `mktemp -d -p /mnt #{name}-XXXXX`.chomp # XXX test for failure
       `mount #{slice.root_disk.path} #{temp_mount}` # XXX test for failure
 
-      File.mkdir_p backup_dir
+      FileUtils.mkdir_p backup_dir
       
       # Creating archive at backup_dir/archive_name ...
       excludes_file = File.join(File.dirname(__FILE__),'..','templates','exclude_from_backups')
