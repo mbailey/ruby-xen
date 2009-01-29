@@ -24,14 +24,15 @@ module Xen
 
       temp_mount = `mktemp -d -p /mnt #{name}-XXXXX`.chomp # XXX test for failure
       `mount #{slice.root_disk.path} #{temp_mount}` # XXX test for failure
+      
+      
 
       FileUtils.mkdir_p backup_dir
       
       # Creating archive at backup_dir/archive_name ...
       excludes_file = File.join(File.dirname(__FILE__),'..','templates','exclude_from_backups')
-      `tar --create --exclude-from=#{excludes_file} --directory #{temp_mount} --file #{backup_dir}/#{archive_name} .`
-
-      # XXX test for failure
+      temp_tarball = `mktemp -p /mnt #{name}-XXXXX`.chomp # XXX test for failure
+      `tar --create --exclude-from=#{excludes_file} --directory #{temp_mount} --file #{backup_dir}/#{temp_tarball} . && mv #{temp_tarball} #{archive_name}`
       
       # Unmounting image
       `umount #{temp_mount}`
