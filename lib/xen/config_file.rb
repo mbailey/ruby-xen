@@ -30,7 +30,7 @@ module Xen
     end
 
     def self.all
-      config_files = Dir.glob("#{Xen::XEN_DOMU_CONFIG_DIR}/*#{Xen::CONFIG_FILE_EXTENSION}")
+      config_files = Dir.glob("#{Xen::XEN_DOMU_CONFIG_DIR}/*#{Xen::CONFIG_FILE_EXTENSION}").sort
       config_files.collect do |filename|
         create_from_config_file(File.read(filename))
       end
