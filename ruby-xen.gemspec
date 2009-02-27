@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name     = "ruby-xen"
-  s.version  = "0.1.0"
-  s.date     = "2009-02-02"
+  s.version  = "0.1.1"
+  s.date     = "2009-02-27"
   s.summary  = "Ruby library for managing Xen virtual hosts"
   s.email    = "mike@bailey.net.au"
   s.homepage = "http://github.com/mbailey/ruby-xen"
