@@ -34,6 +34,7 @@ module Xen
       # Set some derived options
       options.reverse_merge! 'hostname' => name # Name host after this slice
       options['dhcp'] = true unless options['ip']
+      options['accounts'].to_i == 1 ? options['accounts'] = true : options.delete('accounts')
       options['swap'] ||= options['memory'].to_i * 2
       if options['root_pass']
         options['role'] = 'passwd'
