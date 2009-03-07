@@ -25,8 +25,6 @@ module Xen
       temp_mount = `mktemp -d -p /mnt #{name}-XXXXX`.chomp # XXX test for failure
       `mount #{slice.root_disk.path} #{temp_mount}` # XXX test for failure
       
-      
-
       FileUtils.mkdir_p backup_dir
       
       # Creating archive at backup_dir/archive_name ...
@@ -57,7 +55,7 @@ module Xen
     def self.find(*args)
       # return all
       slice = args.first
-      Dir.glob("#{Xen::BACKUP_DIR}/*-*#{Xen::BACKUP_FILE_EXT}").collect { |file|
+      Dir.glob("#{Xen::BACKUP_DIR}/*-*#{Xen::BACKUP_FILE_EXT}").sort.collect { |file|
         if match = File.basename(file, Xen::BACKUP_FILE_EXT).match(/(#{ slice || '.*' })-(.*)/)
           new(:name => match[1], :version => match[2])
         end
