@@ -74,8 +74,8 @@ module Xen
       `xm create #{config_file}`
     end
   
-    def self.shutdown_instance(name, blocking=false)
-      `xm shutdown #{'-w' if blocking} #{name}`
+    def self.shutdown_instance(name, options={})
+      `xm shutdown #{'-w' if options[:blocking]} #{name}`
     end
   
     # Xen::Command.create_image('memory=512', :size => '10Gb')

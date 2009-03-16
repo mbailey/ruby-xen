@@ -105,8 +105,8 @@ module Xen
       @instance = Xen::Instance.find(@name)
     end
   
-    def stop
-      Xen::Instance.shutdown(@name)
+    def stop(options={})
+      Xen::Instance.shutdown(@name, options)
       @instance = Xen::Instance.find(@name)
     end
   

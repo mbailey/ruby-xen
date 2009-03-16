@@ -16,9 +16,8 @@ module Xen
       archive_name="#{name}-#{version}#{backup_file_ext}"
             
       slice = Xen::Slice.find(name) # XXX test for failure
-      if slice.running?
-        slice.stop
-        sleep 10
+      if slice.running?        
+        slice.stop(:blocking => true)
         restart_slice = true
       end
 
