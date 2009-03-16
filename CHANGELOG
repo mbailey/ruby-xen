@@ -1,5 +1,8 @@
 == git
 
+== 0.1.2 (March 16, 2009)
+
+* bugfix: Ensure slice is stopped before creating a backup. 
 
 == 0.1.1 (February 27, 2009)
 
